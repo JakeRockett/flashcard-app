@@ -1,6 +1,7 @@
 package ie.setu
 
-import java.lang.System.exit
+import ie.setu.controllers.FlashCardAPI
+import ie.setu.controllers.SubjectAPI
 
 fun main() {
     runMenu()
@@ -26,37 +27,16 @@ fun flashCardMenu(): Int {
 
 
 fun runMenu() {
+
+    val flashCardAPI = FlashCardAPI()
+    val subjectAPI = SubjectAPI()
     do {
         val num = flashCardMenu()
         when (num) {
-            1 -> addFlashCard()
-            2 -> viewFlashCard()
-            3 -> studyFlashCard()
-            4 -> editFlashCard()
-            0 -> exitApp()
+            1 -> flashCardAPI.addFlashCard()
+            2 -> flashCardAPI.viewAllFlashCards()
             else -> println("The number you chose was invalid. Try again: ")
         }
 
     } while (true)
-}
-
-fun addFlashCard() {
-
-}
-
-fun viewFlashCard() {
-
-}
-
-fun studyFlashCard() {
-
-}
-
-fun editFlashCard() {
-
-}
-
-fun exitApp() {
-    println("Goodbye for now.")
-    exit(0)
 }
