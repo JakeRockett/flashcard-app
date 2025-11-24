@@ -2,6 +2,11 @@ package ie.setu
 
 import ie.setu.controllers.FlashCardAPI
 import ie.setu.controllers.SubjectAPI
+import ie.setu.models.FlashCard
+import ie.setu.models.Subject
+
+private val flashCardAPI = FlashCardAPI()
+
 
 fun main() {
     runMenu()
@@ -39,4 +44,8 @@ fun runMenu() {
         }
 
     } while (true)
+}
+
+fun addFlashCard() {
+
 }
