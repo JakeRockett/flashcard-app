@@ -49,6 +49,30 @@ class FlashCardAPI (serializerType: Serializer) {
 
     fun numberOfFlashCards() = flashcards.size
 
+    fun save(): Boolean {
+        return try {
+            serializer.write(flashcards)
+            true
+        } catch (e: Exception) {
+            println("Error saving flashcards: ${e.message}")
+            false
+        }
+    }
+
+    fun load(): Boolean {
+        return try {
+            val loaded = serializer.read() as? List<FlashCard> ?: emptyList()
+            flashcards.clear()
+            flashcards.addAll(loaded)
+            nextFlashCardId = (flashcards.maxOfOrNull { it.flashCardId } ?: 0) + 1
+            true
+        } catch (e: Exception) {
+            println("Error loading flashcards: ${e.message}")
+            false
+        }
+    }
+
+
 
 
 
