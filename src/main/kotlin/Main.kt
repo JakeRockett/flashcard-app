@@ -1,51 +1,83 @@
 package ie.setu
 
 import ie.setu.controllers.FlashCardAPI
-import ie.setu.controllers.SubjectAPI
 import ie.setu.models.FlashCard
-import ie.setu.models.Subject
+import ie.setu.utils.readNextInt
+import ie.setu.utils.readNextLine
+import ie.setu.persistence.XMLSerializer
+import java.io.File
+import kotlin.system.exitProcess
 
-private val flashCardAPI = FlashCardAPI()
-
+private val flashCardAPI = FlashCardAPI(XMLSerializer(File("flashcards.xml")))
 
 fun main() {
     runMenu()
 }
 
 fun flashCardMenu(): Int {
-    print("""
+    print(
+        """
           ----------------------------------
           |        FLASHCARD APP           |
           ----------------------------------
-          | FLASHCARD MENU                 |
           |   1) Add a Flashcard           |
-          |   2) View All Flashcards       |
-          |   3) Study a Flashcard         |
-          |   4) Edit a Flashcard          |
+          |   2) List All Flashcards       |
+          |   3) Update a Flashcard        |
+          |   4) Delete a Flashcard        |
+          |   5) List Flashcards by Subject|
+          |   6) Find Flashcard by ID      |
+          ----------------------------------
+          |   20) Save Flashcards          |
+          |   21) Load Flashcards          |
           ----------------------------------
           |   0) Exit                      |
           ----------------------------------
-          ==>> """)
+        ==>> 
+        """.trimIndent()
+    )
     return readlnOrNull()?.toIntOrNull() ?: -1
 }
 
-
-
 fun runMenu() {
-
-    val flashCardAPI = FlashCardAPI()
-    val subjectAPI = SubjectAPI()
     do {
-        val num = flashCardMenu()
-        when (num) {
-            1 -> flashCardAPI.addFlashCard()
-            2 -> flashCardAPI.viewAllFlashCards()
-            else -> println("The number you chose was invalid. Try again: ")
+        when (val option = flashCardMenu()) {
+            1 -> addFlashCard()
+            else -> println("Invalid option: $option")
         }
-
     } while (true)
 }
 
 fun addFlashCard() {
+    println("---- ADD FLASHCARD ----")
 
+    val subjectId = readNextInt("Enter Subject ID: ")
+    val subArea = readNextLine("Enter Sub-Area: ")
+    val difficultyLevel = readNextLine("Enter Difficulty Level: ")
+    val subjectArea = readNextLine("Enter Subject Area: ")
+    val isExaminable = readNextLine("Is this examinable? (yes/no): ").lowercase() == "yes"
+    val question = readNextLine("Enter the question: ")
+    val answer = readNextLine("Enter the answer: ")
+
+    val newFlashCard = FlashCard(
+        flashCardId = 0,
+        subjectId = subjectId,
+        subArea = subArea,
+        difficultyLevel = difficultyLevel,
+        numTimesStudied = 0,
+        subjectArea = subjectArea,
+        isExaminable = isExaminable,
+        numTimesRight = 0,
+        question = question,
+        answer = answer
+    )
+
+    val added = flashCardAPI.addFlashCard(newFlashCard)
+
+    if (added) {
+        println("Your flashcard has been added successfully!")
+    } else {
+        println("Failed to add your flashcard.")
+    }
 }
+
+
