@@ -45,6 +45,8 @@ fun runMenu() {
             2 -> listAllFlashcards()
             3 -> updatedFlashCard()
             4 -> deleteFlashCard()
+            20 -> saveFlashcards()
+            21 -> loadFlashcards()
             else -> println("Invalid option: $option")
         }
     } while (true)
@@ -144,6 +146,23 @@ fun deleteFlashCard() {
         println("No flashcards to delete.")
     }
 }
+
+fun saveFlashcards() {
+    if (flashCardAPI.save()) {
+        println("Flashcards saved successfully!")
+    } else {
+        println("Failed to save flashcards.")
+    }
+}
+
+fun loadFlashcards() {
+    if (flashCardAPI.load()) {
+        println("Flashcards loaded successfully!")
+    } else {
+        println("Failed to load flashcards.")
+    }
+}
+
 
 
 
