@@ -14,4 +14,16 @@ class FlashCardAPI (serializerType: Serializer) {
         return flashcards.add(flashCard)
     }
 
+    fun listAllFlashCards(): String =
+        if (flashcards.isEmpty()) "You don't have any flashcards stored"
+        else formatListString(flashcards)
+
+
+    private fun formatListString(cards: List<FlashCard>): String =
+        cards.joinToString("\n") { card ->
+            "${flashcards.indexOf(card)}: $card"
+        }
+
+
+
 }

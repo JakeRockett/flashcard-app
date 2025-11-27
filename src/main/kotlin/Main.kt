@@ -42,6 +42,7 @@ fun runMenu() {
     do {
         when (val option = flashCardMenu()) {
             1 -> addFlashCard()
+            2 -> listAllFlashcards()
             else -> println("Invalid option: $option")
         }
     } while (true)
@@ -79,5 +80,11 @@ fun addFlashCard() {
         println("Failed to add your flashcard.")
     }
 }
+
+fun listAllFlashcards() {
+    println(flashCardAPI.listAllFlashCards())
+}
+
+
 
 
