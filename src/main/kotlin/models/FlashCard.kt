@@ -1,7 +1,7 @@
 package ie.setu.models
 
 data class FlashCard (
-    val flashCardId: Int,
+    var flashCardId: Int,
     val subjectId: Int,
     var subArea: String,
     var difficultyLevel: String,
