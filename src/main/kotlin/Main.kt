@@ -43,6 +43,8 @@ fun runMenu() {
         when (val option = flashCardMenu()) {
             1 -> addFlashCard()
             2 -> listAllFlashcards()
+            3 -> updatedFlashCard()
+            4 -> deleteFlashCard()
             else -> println("Invalid option: $option")
         }
     } while (true)
@@ -84,6 +86,65 @@ fun addFlashCard() {
 fun listAllFlashcards() {
     println(flashCardAPI.listAllFlashCards())
 }
+
+fun updatedFlashCard() {
+    listAllFlashcards()
+
+    if (flashCardAPI.numberOfFlashCards() > 0) {
+        val index = readNextInt("Enter the index you want to update: ")
+        val subjectId = readNextInt("Enter the new subject ID: ")
+        val subArea = readNextLine("Enter the new sub-area: ")
+        val difficulty = readNextLine("Enter the new difficulty: ")
+        val subjectArea = readNextLine("Enter the new subject area: ")
+        val examinable = readNextLine("Is examinable (yes/no): ").lowercase() == "yes"
+        val question = readNextLine("Enter the new question: ")
+        val answer = readNextLine("Enter the new answer: ")
+
+        val updatedCard = FlashCard(
+            flashCardId = 0,
+            subjectId = subjectId,
+            subArea = subArea,
+            difficultyLevel = difficulty,
+            numTimesStudied = 0,
+            subjectArea = subjectArea,
+            isExaminable = examinable,
+            numTimesRight = 0,
+            question = question,
+            answer = answer
+        )
+
+        val success = flashCardAPI.updatedFlashCard(index, updatedCard)
+
+        if (success) {
+            println("Flashcard updated successfully!")
+        } else {
+            println("Update failed. Invalid index.")
+        }
+    } else {
+        println("No flashcards to update.")
+    }
+}
+
+fun deleteFlashCard() {
+    println("---- DELETE FLASHCARD ----")
+
+    println(flashCardAPI.listAllFlashCards())
+
+    if (flashCardAPI.numberOfFlashCards() > 0) {
+        val index = readNextInt("Enter the index of the flashcard to delete: ")
+
+        val deleted = flashCardAPI.deleteFlashCard(index)
+
+        if (deleted != null) {
+            println("Flashcard deleted successfully! ID: ${deleted.flashCardId}")
+        } else {
+            println("Delete failed. Invalid index.")
+        }
+    } else {
+        println("No flashcards to delete.")
+    }
+}
+
 
 
 
