@@ -36,9 +36,9 @@ fun flashCardMenu(): Int {
         | Subject Options                       |
         -----------------------------------------
         | 7) Add Subject                        |
-        | 8) List All Subjects                  |
-        | 9) Update Subject                     |
-        | 10) Delete Subject                    |
+        | 8) Study Flashcard by Subject         |                                       |
+        | 9) List All Subjects                  |
+        | 10) Delete Subject                     |
         -----------------------------------------
         | Persistence                           |
         -----------------------------------------
@@ -64,8 +64,9 @@ fun runMenu() {
             6 -> findFlashcardById()
 
             7 -> addSubject()
-            8 -> listSubjects()
-            9 -> deleteSubject()
+            8 -> studyFlashcardsBySubject()
+            9 -> listSubjects()
+            10 -> deleteSubject()
 
             20 -> saveAll()
             21 -> loadAll()
@@ -218,6 +219,38 @@ fun findFlashcardById() {
     val id = readNextInt("Enter Flashcard ID: ")
     println(flashCardAPI.findFlashcardById(id))
 }
+
+fun studyFlashcardsBySubject() {
+    listSubjects()
+    if (subjectAPI.numberOfSubjects() == 0) {
+        println("No subjects available to study.")
+        return
+    }
+
+    val subjectId = readNextInt("Enter the Subject ID you want to study: ")
+
+    val flashcardsToStudy = flashCardAPI.getFlashcardsBySubject(subjectId)
+    if (flashcardsToStudy.isEmpty()) {
+        println("No flashcards for this subject.")
+        return
+    }
+
+    println("---- STUDYING FLASHCARDS ----")
+    for (flashcard in flashcardsToStudy) {
+        println("Question: ${flashcard.question}")
+        readNextLine("Press Enter to see the answer...")
+        println("Answer: ${flashcard.answer}")
+
+        val correct = readNextLine("Did you answer correctly? (yes/no): ").lowercase() == "yes"
+        if (correct) flashcard.numTimesRight++
+        flashcard.numTimesStudied++
+        println("Times studied: ${flashcard.numTimesStudied}, Times correct: ${flashcard.numTimesRight}")
+        println("--------------------------------")
+    }
+
+    println("You have finished studying subject ID $subjectId!")
+}
+
 
 fun saveAll() {
     val fcSaved = flashCardAPI.save()
