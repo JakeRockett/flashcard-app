@@ -36,7 +36,7 @@ class FlashCardAPI (serializerType: Serializer) {
     }
 
     fun deleteFlashCard(index: Int): FlashCard? {
-        return if (isValidListIndex(index, flashcards)) { // pass the list, not size
+        return if (isValidListIndex(index, flashcards)) {
             flashcards.removeAt(index)
         } else {
             null
@@ -52,6 +52,11 @@ class FlashCardAPI (serializerType: Serializer) {
     fun findFlashcardById(flashCardId: Int): FlashCard? {
         return flashcards.find { it.flashCardId == flashCardId }
     }
+
+    fun getFlashcardsBySubject(subjectId: Int): List<FlashCard> {
+        return flashcards.filter { it.subjectId == subjectId }
+    }
+
 
 
 
