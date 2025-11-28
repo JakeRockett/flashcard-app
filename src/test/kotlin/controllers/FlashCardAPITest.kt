@@ -44,4 +44,59 @@ class FlashCardAPITest {
         }
     }
 
+    @Nested
+    inner class ListFlashCards {
+
+        @Test
+        fun `list all flashcards returns cards`() {
+            val allCards = flashCardAPI.listAllFlashCards().lowercase()
+            assertTrue(allCards.contains("algebra"))
+            assertTrue(allCards.contains("physics"))
+            assertTrue(allCards.contains("geometry"))
+        }
+
+        @Test
+        fun `listAllFlashCards returns message when empty`() {
+            val emptyAPI = FlashCardAPI(XMLSerializer(File("empty-flashcards.xml")))
+            val result = emptyAPI.listAllFlashCards().lowercase()
+            assertTrue(result.contains("don't have any flashcards"))
+        }
+    }
+
+    @Nested
+    inner class UpdateFlashCards {
+
+        @Test
+        fun `updating existing flashcard changes data`() {
+            val updatedCard = FlashCard(0, 1, "Algebra", "Hard", 0, "Math", false, 0, "2+3=?", "5")
+            assertTrue(flashCardAPI.updatedFlashCard(0, updatedCard))
+            val loaded = flashCardAPI.findFlashCard(0)
+            assertEquals("Hard", loaded!!.difficultyLevel)
+            assertEquals("5", loaded.answer)
+        }
+
+        @Test
+        fun `updating non-existing flashcard returns false`() {
+            val updatedCard = FlashCard(0, 1, "Algebra", "Hard", 0, "Math", false, 0, "2+3=?", "5")
+            assertFalse(flashCardAPI.updatedFlashCard(10, updatedCard))
+            assertFalse(flashCardAPI.updatedFlashCard(-1, updatedCard))
+        }
+    }
+
+    @Nested
+    inner class DeleteFlashCards {
+
+        @Test
+        fun `deleting existing flashcard returns deleted object`() {
+            val deleted = flashCardAPI.deleteFlashCard(1)
+            assertEquals(card2, deleted)
+            assertEquals(2, flashCardAPI.numberOfFlashCards())
+        }
+
+        @Test
+        fun `deleting non-existing flashcard returns null`() {
+            assertNull(flashCardAPI.deleteFlashCard(-1))
+            assertNull(flashCardAPI.deleteFlashCard(5))
+        }
+    }
 }

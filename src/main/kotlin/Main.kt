@@ -1,5 +1,8 @@
 package ie.setu
 
+import ie.setu.persistence.Serializer
+import ie.setu.models.Subject
+import ie.setu.controllers.SubjectAPI
 import ie.setu.controllers.FlashCardAPI
 import ie.setu.models.FlashCard
 import ie.setu.utils.readNextInt
@@ -9,6 +12,7 @@ import java.io.File
 import kotlin.system.exitProcess
 
 private val flashCardAPI = FlashCardAPI(XMLSerializer(File("flashcards.xml")))
+private val subjectAPI = SubjectAPI(XMLSerializer(File("subjects.xml")))
 
 fun main() {
     runMenu()
@@ -17,22 +21,33 @@ fun main() {
 fun flashCardMenu(): Int {
     print(
         """
-          ----------------------------------
-          |        FLASHCARD APP           |
-          ----------------------------------
-          |   1) Add a Flashcard           |
-          |   2) List All Flashcards       |
-          |   3) Update a Flashcard        |
-          |   4) Delete a Flashcard        |
-          |   5) List Flashcards by Subject|
-          |   6) Find Flashcard by ID      |
-          ----------------------------------
-          |   20) Save Flashcards          |
-          |   21) Load Flashcards          |
-          ----------------------------------
-          |   0) Exit                      |
-          ----------------------------------
-        ==>> 
+        -----------------------------------------
+        |           FLASHCARD APP               |
+        -----------------------------------------
+        | Flashcard Options                     |
+        -----------------------------------------
+        | 1) Add Flashcard                      |
+        | 2) List All Flashcards                |
+        | 3) Update Flashcard                   |
+        | 4) Delete Flashcard                   |
+        | 5) List Flashcards by Subject ID      |
+        | 6) Find Flashcard by ID               |
+        -----------------------------------------
+        | Subject Options                       |
+        -----------------------------------------
+        | 7) Add Subject                        |
+        | 8) List All Subjects                  |
+        | 9) Update Subject                     |
+        | 10) Delete Subject                    |
+        -----------------------------------------
+        | Persistence                           |
+        -----------------------------------------
+        | 20) Save All                          |
+        | 21) Load All                          |
+        -----------------------------------------
+        | 0) Exit                                |
+        -----------------------------------------
+        ==>>
         """.trimIndent()
     )
     return readlnOrNull()?.toIntOrNull() ?: -1
@@ -45,8 +60,17 @@ fun runMenu() {
             2 -> listAllFlashcards()
             3 -> updatedFlashCard()
             4 -> deleteFlashCard()
-            20 -> saveFlashcards()
-            21 -> loadFlashcards()
+            5 -> listFlashcardsBySubject()
+            6 -> findFlashcardById()
+
+            7 -> addSubject()
+            8 -> listSubjects()
+            9 -> deleteSubject()
+
+            20 -> saveAll()
+            21 -> loadAll()
+
+            0 -> exitApp()
             else -> println("Invalid option: $option")
         }
     } while (true)
@@ -84,6 +108,30 @@ fun addFlashCard() {
         println("Failed to add your flashcard.")
     }
 }
+
+fun addSubject() {
+    println("---- ADD SUBJECT ----")
+
+    val subjectTitle = readNextLine("Enter subject title: ")
+    val category = readNextLine("Enter subject category: ")
+    val grade = readNextLine("Enter subject grade: ")
+    val cost = readNextInt("Enter subject cost: ").toDouble()
+    val isIncludedInFinalAward = readNextLine("Included in final award? (yes/no): ").lowercase() == "yes"
+
+    val newSubject = Subject(
+        subjectId = 0,
+        subjectTitle = subjectTitle,
+        category = category,
+        grade = grade,
+        cost = cost,
+        isIncludedInFinalAward = isIncludedInFinalAward
+    )
+
+    val added = subjectAPI.addSubject(newSubject)
+
+    println(if (added) "Subject added successfully!" else "Failed to add subject.")
+}
+
 
 fun listAllFlashcards() {
     println(flashCardAPI.listAllFlashCards())
@@ -147,21 +195,56 @@ fun deleteFlashCard() {
     }
 }
 
-fun saveFlashcards() {
-    if (flashCardAPI.save()) {
-        println("Flashcards saved successfully!")
-    } else {
-        println("Failed to save flashcards.")
-    }
+fun listSubjects() {
+    println(subjectAPI.listAllSubjects())
 }
 
-fun loadFlashcards() {
-    if (flashCardAPI.load()) {
-        println("Flashcards loaded successfully!")
-    } else {
-        println("Failed to load flashcards.")
-    }
+fun deleteSubject() {
+    listSubjects()
+    if (subjectAPI.numberOfSubjects() == 0) return
+
+    val index = readNextInt("Enter index to delete: ")
+    val removed = subjectAPI.deleteSubject(index)
+
+    println(if (removed != null) "Subject deleted." else "Delete failed.")
 }
+
+fun listFlashcardsBySubject() {
+    val id = readNextInt("Enter Subject ID: ")
+    println(flashCardAPI.listFlashcardsBySubject(id))
+}
+
+fun findFlashcardById() {
+    val id = readNextInt("Enter Flashcard ID: ")
+    println(flashCardAPI.findFlashcardById(id))
+}
+
+fun saveAll() {
+    val fcSaved = flashCardAPI.save()
+    val subjectSaved = subjectAPI.save()
+
+    if (fcSaved && subjectSaved) println("All data saved successfully!")
+    else if (!fcSaved && !subjectSaved) println("Failed to save Flashcards and Subjects.")
+    else if (!fcSaved) println("Failed to save Flashcards.")
+    else println("Failed to save Subjects.")
+}
+
+fun loadAll() {
+    val fcLoaded = flashCardAPI.load()
+    val subjectLoaded = subjectAPI.load()
+
+    if (fcLoaded && subjectLoaded) println("All data loaded successfully!")
+    else if (!fcLoaded && !subjectLoaded) println("Failed to load Flashcards and Subjects.")
+    else if (!fcLoaded) println("Failed to load Flashcards.")
+    else println("Failed to load Subjects.")
+}
+
+
+fun exitApp() {
+    println("Thank you for using the Flashcard App")
+    kotlin.system.exitProcess(0)
+}
+
 
 
 

@@ -43,6 +43,17 @@ class FlashCardAPI (serializerType: Serializer) {
         }
     }
 
+    fun listFlashcardsBySubject(subjectId: Int): String {
+        val result = flashcards.filter { it.subjectId == subjectId }
+        return if (result.isEmpty()) "No flashcards for subject ID $subjectId"
+        else formatListString(result)
+    }
+
+    fun findFlashcardById(flashCardId: Int): FlashCard? {
+        return flashcards.find { it.flashCardId == flashCardId }
+    }
+
+
 
     fun findFlashCard(index: Int): FlashCard? =
         if (isValidListIndex(index, flashcards)) flashcards[index] else null
@@ -53,24 +64,21 @@ class FlashCardAPI (serializerType: Serializer) {
         return try {
             serializer.write(flashcards)
             true
-        } catch (e: Exception) {
-            println("Error saving flashcards: ${e.message}")
+        } catch (ex: Exception) {
             false
         }
     }
 
     fun load(): Boolean {
         return try {
-            val loaded = serializer.read() as? List<FlashCard> ?: emptyList()
-            flashcards.clear()
-            flashcards.addAll(loaded)
-            nextFlashCardId = (flashcards.maxOfOrNull { it.flashCardId } ?: 0) + 1
+            val loaded = serializer.read() as? MutableList<FlashCard>
+            if (loaded != null) flashcards.addAll(loaded)
             true
-        } catch (e: Exception) {
-            println("Error loading flashcards: ${e.message}")
+        } catch (ex: Exception) {
             false
         }
     }
+
 
 
 
